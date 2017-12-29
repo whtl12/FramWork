@@ -6,9 +6,9 @@ namespace GetUIPosition
 {
     public class UIPosition
     {
-        public string OutGameUIPos = "";
-        public string InGameUIPos = "";
-        public string BasicPopupUIPos = "";
+        public string OutGameUIPos = "OutGameUI";
+        public string InGameUIPos = "InGameUI";
+        public string BasicPopupUIPos = "BasicPopup";
 
         Dictionary<string, string> UIPosInfoDIc = new Dictionary<string, string>();
 
@@ -48,17 +48,17 @@ public class UIManager : MonoBehaviour {
         BasicPopup,
     };
 
-
+    public GameObject UIParent;
     public static UIManager m_Instance;
     // Use this for initialization
-    void Start () {
+    void Awake () {
         m_PopupController = new PopupController();
         m_Instance = this;
     }
 	
 	// Update is called once per frame
 	void Update () {
-        if (Application.platform == RuntimePlatform.Android)
+        //if (Application.platform == RuntimePlatform.Android)
         {
             if (Input.GetKey(KeyCode.Escape))
             {
@@ -68,14 +68,19 @@ public class UIManager : MonoBehaviour {
         }
     }
 
-    public void OpenStage(StageUI name)
+    public void ChangeStage(StageUI name)
     {
-
+        m_PopupController.ChangeStage(GetUIObj(name));
     }
 
     public void OpenPopup(PopupUI name)
     {
         m_PopupController.OpenPopup(GetUIObj(name));
+    }
+
+    public void ClosePopup()
+    {
+        m_PopupController.ClosePopup();
     }
 
     public void AllClosePopup()
@@ -87,7 +92,7 @@ public class UIManager : MonoBehaviour {
     GameObject GetUIObj<T>(T uiName)
     {
         GetUIPosition.UIPosition posString = new GetUIPosition.UIPosition();
-        GameObject gameObj = GameObject.Find(posString.GetObjectPosStr(uiName.ToString()));
+        GameObject gameObj = UIParent.transform.Find(posString.GetObjectPosStr(uiName.ToString())).gameObject;
 
         if (gameObj == null)
             Debug.LogError("UIManager UI Object NUll Error!");
